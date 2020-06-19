@@ -13,11 +13,17 @@ ScalableSemanticSegmentation can segment objects in picture with tuning balance 
 - the margin, that is the overlap area can be customized.
 
 ## Demo
+https://scalable-ss-demo.herokuapp.com/index.html
+
+<p align="center">
+<img src="./doc/movie.gif" width="600" />
+</p>
 
 
 ## Usage
 ### Sample Code
 
+https://github.com/dannadori/ScalableSemanticSegmentationjs_demo
 
 ## Install
 ```
