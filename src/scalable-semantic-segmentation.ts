@@ -7,6 +7,7 @@ export class ScalableSemanticSegmentation{
     private workerSS:Worker|null = null
     private _girdDrawCanvas:HTMLCanvasElement|null = null
     private _previewCanvas:HTMLCanvasElement|null = null
+    private _split_margin = 0
 
  
     addInitializedListener = (f:(()=>void)) =>{
@@ -29,7 +30,7 @@ export class ScalableSemanticSegmentation{
 
     
     init(modelPath:string, modelWidth:number, modelHeight:number, splitMargin:number){
-        // console.log("SSS Worker initializing... ")
+        this._split_margin = splitMargin
         // SemanticSegmentation 用ワーカー
         this.workerSS = new Worker('./workerSS.ts', { type: 'module' })
         this.workerSS.onmessage = (event) => {
@@ -52,12 +53,13 @@ export class ScalableSemanticSegmentation{
             modelHeight:modelHeight, 
             splitMargin:splitMargin
         })
+
     }
 
 
 
-    predict(captureCanvas:HTMLCanvasElement, col_num:number, row_num:number, split_margin:number){
-        const boxMetadata   = this.splitCanvasToBoxes(captureCanvas, col_num, row_num, split_margin)
+    predict(captureCanvas:HTMLCanvasElement, col_num:number, row_num:number){
+        const boxMetadata   = this.splitCanvasToBoxes(captureCanvas, col_num, row_num, this._split_margin)
         if(this._girdDrawCanvas !== null){
             this.drawBoxGrid(this._girdDrawCanvas, boxMetadata)
         }
