@@ -13,6 +13,33 @@ let modelHeight=300
 
 let maskColor = 255 // all value of rgb is set to this. 
 
+const getImageWithLimitFullHD = (img:ImageBitmap):ImageData=>{
+  const LANDSCAPE=1
+  const PORTRATE=2
+  const orgWidth  = img.width
+  const orgHeight = img.height
+  const mode = orgWidth > orgHeight ? LANDSCAPE : PORTRATE
+  
+  let rateW = mode === LANDSCAPE ? orgWidth/1920  : orgWidth/1080
+  let rateH = mode === LANDSCAPE ? orgHeight/1080 : orgHeight/1920
+
+  if (rateW <= 1 && rateH <= 1){ // smaller than HULLHD, size is not changed
+    rateW = 1
+    rateH = 1
+  }
+
+  const shrinkRate = Math.max(rateW, rateH)
+  const newWidth  = Math.ceil(orgWidth/shrinkRate)
+  const newHeight = Math.ceil(orgHeight/shrinkRate)
+
+  const offscreen = new OffscreenCanvas(newWidth, newHeight)
+  const ctx = offscreen.getContext('2d')!
+  ctx.drawImage(img, 0, 0, newWidth, newHeight)
+  const newImg = ctx.getImageData(0, 0, newWidth, newHeight)
+  return newImg
+
+}
+
 
 const predictByImageBitmaps = async (model:tf.GraphModel, bms:ImageBitmap[]) : Promise<number[][][] | null> =>{
   let mapDatas:number[][][]|null = null
@@ -21,10 +48,11 @@ const predictByImageBitmaps = async (model:tf.GraphModel, bms:ImageBitmap[]) : P
 
   const canvasTensors = []
   for(let i =0;i<bm_num;i++){
-      const offscreen = new OffscreenCanvas(bms[i].width, bms[i].height)
-      const ctx = offscreen.getContext('2d')!
-      ctx.drawImage(bms[i], 0, 0, bms[i].width, bms[i].height)
-      const img = ctx.getImageData(0, 0, bms[i].width, bms[i].height)
+      // const offscreen = new OffscreenCanvas(bms[i].width, bms[i].height)
+      // const ctx = offscreen.getContext('2d')!
+      // ctx.drawImage(bms[i], 0, 0, bms[i].width, bms[i].height)
+      // const img = ctx.getImageData(0, 0, bms[i].width, bms[i].height)
+      const img = getImageWithLimitFullHD(bms[i])
 
       const box_tensor = tf.browser.fromPixels(img).resizeNearestNeighbor([modelWidth, modelHeight])
       canvasTensors.push(box_tensor)
