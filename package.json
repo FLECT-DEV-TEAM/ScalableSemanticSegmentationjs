@@ -1,6 +1,6 @@
 {
   "name": "scalable-semantic-segmentation-js",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "description": "",
   "main": "dist/scalable-semantic-segmentation.js",
   "scripts": {
